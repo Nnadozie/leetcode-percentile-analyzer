@@ -2,11 +2,12 @@ const axios = require('axios');
 const fs = require('fs');
 
 interface ranker {
-  rank: string;
+  rank: number;
   finish_time: number;
   score: number;
 }
 const competitors: ranker[] = [];
+const url = `https://leetcode.com/contest/api/ranking/${process.argv[2]}/`;
 
 async function getCompetitors(url: string): Promise<ranker[]> {
   try {
@@ -17,48 +18,114 @@ async function getCompetitors(url: string): Promise<ranker[]> {
   }
 }
 
-async function buildCompetitors() {
-  let res: ranker[];
-  let page = 671;
-  do {
-    res = await getCompetitors(
-      `https://leetcode.com/contest/api/ranking/weekly-contest-276/?pagination=${page}&region=global`,
-    );
-    competitors.push(...res);
-    console.log(`https://leetcode.com/contest/api/ranking/weekly-contest-276/?pagination=${page}&region=global`);
-    console.log(process.argv[2]);
-    fs.writeFile(process.argv[2], JSON.stringify(competitors), (err) => {
-      if (err) throw err;
-      console.log('file saved');
-    });
-    page++;
-  } while ((res && res.find((val) => val.score === 0)) === undefined);
-}
-
-//find last page
-//find zero score time
-//find zero score rank
-//calc 10 percentile rank
-//find 10 percentile rank object
-
 async function findLastPage(page = 0, step = 100): Promise<number> {
   let res: ranker[];
   page = page === 0 ? step : page;
   if (step === 0) return page + 1;
   console.log(`Searching from page: ${page}`, `In steps of: ${step}`);
 
-  while ((res && res.find((val) => val.score === 0)) === undefined) {
-    res = await getCompetitors(
-      `https://leetcode.com/contest/api/ranking/biweekly-contest-68/?pagination=${page}&region=global`,
-    );
+  while ((res && res.length > 0 && res.find((val) => val.score === 0)) === undefined) {
+    res = await getCompetitors(`${url}?pagination=${page}&region=global`);
     page += step;
   }
   return findLastPage(page - step * 2, Math.trunc(step / 2));
 }
 
+async function findObjectWithRank(rank: number, page = 0, step = 100): Promise<{ ranker: ranker; pageFound: number }> {
+  let res: ranker[];
+  page = page === 0 ? step : page;
+  console.log(`Searching from page: ${page}`, `in steps of: ${step}`);
+
+  while ((res && res.length > 0 && res.find((val) => val.rank >= rank)) === undefined) {
+    res = await getCompetitors(`${url}?pagination=${page}&region=global`);
+    page += step;
+  }
+
+  if (res && res.find((val) => val.rank === rank)) {
+    return { ranker: res.find((val) => val.rank === rank), pageFound: page - step };
+  }
+
+  return findObjectWithRank(rank, page - step * 2, Math.trunc(step / 2));
+}
+
+async function findFirstZeroScore(page: number) {
+  let res: ranker[] = await getCompetitors(`${url}?pagination=${page}&region=global`);
+  return res && res.find((val) => val.score === 0);
+}
+
+async function findPercentileByTime(finish_time: number, lastRank: number, page = 0, step = 100): Promise<number> {
+  let res: ranker[];
+  page = page === 0 ? step : page;
+  console.log(`Searching from page: ${page}`, `in steps of: ${step}`);
+
+  while ((res && res.length > 0 && res.find((val) => val.finish_time >= finish_time)) === undefined) {
+    res = await getCompetitors(`${url}?pagination=${page}&region=global`);
+    page += step;
+  }
+
+  //may never find exact time in seconds but this is unlikely
+  if (res && res.find((val) => val.finish_time === finish_time)) {
+    console.log('\npage found:', page - step);
+    const pTile = (res.find((val) => val.finish_time === finish_time).rank / lastRank) * 100;
+    console.log(
+      '\n',
+      res.find((val) => val.finish_time === finish_time),
+    );
+    return pTile > Math.trunc(pTile) ? Math.trunc(pTile) + 1 : pTile;
+  }
+
+  return findPercentileByTime(finish_time, lastRank, page - step * 2, Math.trunc(step / 2));
+}
+
 async function main() {
-  //await buildCompetitors();
-  console.log(await findLastPage());
+  console.log('Searching For last page with a score > 0\n');
+  const lastPage = await findLastPage();
+  console.log('\nLast Page:', lastPage);
+
+  // Get obj in last place
+  const lastRankObj = (await getCompetitors(`${url}?pagination=${lastPage}&region=global`)).find(
+    (val) => val.score === 0,
+  );
+  console.log('\nUser in last place:', lastRankObj);
+
+  if (process.argv[4] && process.argv[5] && process.argv[6]) {
+    const myTime =
+      Number(process.argv[4]) * 60 * 60 +
+      Number(process.argv[5]) * 60 +
+      Number(process.argv[6]) +
+      lastRankObj.finish_time;
+
+    console.log(`\nSearching for percentile your completion time of ${myTime}s falls within:`);
+    const myPercentile = await findPercentileByTime(myTime, lastRankObj.rank - 1);
+
+    console.log(
+      `\nWith time of ${process.argv[4]}:${process.argv[5]}:${process.argv[6]} you finished in the ${myPercentile}th percentile, assuming you completed all submissions without error`,
+    );
+
+    if (process.argv[7]) {
+      const percentileByRank = (Number(process.argv[7]) / (lastRankObj.rank - 1)) * 100;
+      console.log(
+        `With a rank of ${process.argv[7]} you finished in the ${
+          percentileByRank > Math.trunc(percentileByRank) ? Math.trunc(percentileByRank) + 1 : percentileByRank
+        }th percentile`,
+      );
+    }
+  }
+
+  const searchTile = process.argv[3] ? process.argv[3] : 10;
+  let nthTileRank = (Number(searchTile) / 100) * (lastRankObj.rank - 1);
+  nthTileRank = nthTileRank > Math.trunc(nthTileRank) ? Math.trunc(nthTileRank) + 1 : nthTileRank;
+
+  console.log(`\nSearching for user marking the ${searchTile}th Percentile boundary. Rank: ${nthTileRank}\n`);
+  const nthObj = await findObjectWithRank(nthTileRank);
+  const nthTime = nthObj.ranker.finish_time - lastRankObj.finish_time;
+  const hh = Math.trunc(nthTime / 60 / 60);
+  const mm = Math.trunc((nthTime - hh * 60 * 60) / 60);
+  const ss = nthTime - mm * 60 - hh * 60 * 60;
+
+  console.log(
+    `\nTo have made ${searchTile}th percentile you need to have finished within ${hh}h:${mm}m:${ss}s, ahead of user who ranked ${nthTileRank} on page ${nthObj.pageFound}`,
+  );
 }
 
 main();
