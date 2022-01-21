@@ -37,7 +37,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 var axios = require('axios');
 var fs = require('fs');
 var competitors = [];
-function getUsers(url) {
+function getCompetitors(url) {
     return __awaiter(this, void 0, void 0, function () {
         var response, error_1;
         return __generator(this, function (_a) {
@@ -63,9 +63,9 @@ function buildCompetitors() {
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    page = 0;
+                    page = 671;
                     _a.label = 1;
-                case 1: return [4 /*yield*/, getUsers("https://leetcode.com/contest/api/ranking/weekly-contest-276/?pagination=".concat(page, "&region=global"))];
+                case 1: return [4 /*yield*/, getCompetitors("https://leetcode.com/contest/api/ranking/weekly-contest-276/?pagination=".concat(page, "&region=global"))];
                 case 2:
                     res = _a.sent();
                     competitors.push.apply(competitors, res);
@@ -79,21 +79,55 @@ function buildCompetitors() {
                     page++;
                     _a.label = 3;
                 case 3:
-                    if (res.find(function (val) { return val.finish_time === 0; }) === undefined) return [3 /*break*/, 1];
+                    if ((res && res.find(function (val) { return val.score === 0; })) === undefined) return [3 /*break*/, 1];
                     _a.label = 4;
                 case 4: return [2 /*return*/];
             }
         });
     });
 }
-function main() {
+//find last page
+//find zero score time
+//find zero score rank
+//calc 10 percentile rank
+//find 10 percentile rank object
+function findLastPage(page, step) {
+    if (page === void 0) { page = 0; }
+    if (step === void 0) { step = 100; }
     return __awaiter(this, void 0, void 0, function () {
+        var res;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, buildCompetitors()];
+                case 0:
+                    page = page === 0 ? step : page;
+                    if (step === 0)
+                        return [2 /*return*/, page + 1];
+                    console.log("Searching from page: ".concat(page), "In steps of: ".concat(step));
+                    _a.label = 1;
                 case 1:
-                    _a.sent();
-                    console.log(competitors);
+                    if (!((res && res.find(function (val) { return val.score === 0; })) === undefined)) return [3 /*break*/, 3];
+                    return [4 /*yield*/, getCompetitors("https://leetcode.com/contest/api/ranking/biweekly-contest-68/?pagination=".concat(page, "&region=global"))];
+                case 2:
+                    res = _a.sent();
+                    page += step;
+                    return [3 /*break*/, 1];
+                case 3: return [2 /*return*/, findLastPage(page - step * 2, Math.trunc(step / 2))];
+            }
+        });
+    });
+}
+function main() {
+    return __awaiter(this, void 0, void 0, function () {
+        var _a, _b;
+        return __generator(this, function (_c) {
+            switch (_c.label) {
+                case 0:
+                    //await buildCompetitors();
+                    _b = (_a = console).log;
+                    return [4 /*yield*/, findLastPage()];
+                case 1:
+                    //await buildCompetitors();
+                    _b.apply(_a, [_c.sent()]);
                     return [2 /*return*/];
             }
         });

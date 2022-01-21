@@ -4,7 +4,8 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "start": "node app.ts"
+    "compile": "tsc app.ts",
+    "start": "yarn compile && node app.js"
   },
   "dependencies": {
     "axios": "^0.25.0",
