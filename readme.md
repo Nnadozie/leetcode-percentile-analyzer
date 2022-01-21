@@ -48,7 +48,8 @@ yarn install
     yarn start biweekly-contest-69 70 0 40 35
 
     > logs ...
-    > To have made 30th percentile you need to have finished within xxh:xxm:xxs, ahead of user who ranked xxxx on page xx
+    > With time of 0:40:35 you finished in the 20th percentile, assuming you completed all submissions without error
+    > With a rank of 6835 you finished in the 69th percentile
     ```
 
 `yarn start <contest-name> <desired-percentile> <hh-finish> <mm-finish> <ss-finish> <rank>`
@@ -61,5 +62,6 @@ yarn install
     yarn start biweekly-contest-69 10 0 40 35 6835
 
     > logs ...
-    > To have made 30th percentile you need to have finished within xxh:xxm:xxs, ahead of user who ranked xxxx on page xx
+    > With time of 0:40:35 you finished in the 20th percentile, assuming you completed all submissions without error
+    > With a rank of 6835 you finished in the 69th percentile
     ```
