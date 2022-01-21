@@ -4,7 +4,7 @@ Each contest url contains the `<contest-name>`. Example:
 
 The contest name here is weekly-contest-276
 
-https://leetcode.com/contest/***weekly-contest-276***/
+https://leetcode.com/contest/weekly-contest-276/
 
 ## Before running
 
