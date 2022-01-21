@@ -1,0 +1,13 @@
+{
+  "name": "leetcode-analysis",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "start": "node app.ts"
+  },
+  "dependencies": {
+    "axios": "^0.25.0",
+    "typescript": "^4.5.4"
+  }
+}
