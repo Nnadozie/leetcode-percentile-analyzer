@@ -36,170 +36,175 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 var axios = require('axios');
 var fs = require('fs');
-var competitors = [];
-var url = "https://leetcode.com/contest/api/ranking/".concat(process.argv[2], "/");
-function getCompetitors(url) {
-    return __awaiter(this, void 0, void 0, function () {
-        var response, error_1;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0:
-                    _a.trys.push([0, 2, , 3]);
-                    return [4 /*yield*/, axios.get(url)];
-                case 1:
-                    response = (_a.sent());
-                    return [2 /*return*/, response && response.data && response.data.total_rank];
-                case 2:
-                    error_1 = _a.sent();
-                    console.error(error_1);
-                    return [3 /*break*/, 3];
-                case 3: return [2 /*return*/];
-            }
-        });
-    });
+if (process.argv[2] === '-h') {
+    console.log(" yarn start <contest-name> \n yarn start <contest-name> <desired-percentile>\n yarn start <contest-name> <desired-percentile> <hh-finish> <mm-finish> <ss-finish>\n yarn start <contest-name> <desired-percentile> <hh-finish> <mm-finish> <ss-finish> <rank>");
 }
-function findLastPage(page, step) {
-    if (page === void 0) { page = 0; }
-    if (step === void 0) { step = 100; }
-    return __awaiter(this, void 0, void 0, function () {
-        var res;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0:
-                    page = page === 0 ? step : page;
-                    if (step === 0)
-                        return [2 /*return*/, page + 1];
-                    console.log("Searching from page: ".concat(page), "In steps of: ".concat(step));
-                    _a.label = 1;
-                case 1:
-                    if (!((res && res.length > 0 && res.find(function (val) { return val.score === 0; })) === undefined)) return [3 /*break*/, 3];
-                    return [4 /*yield*/, getCompetitors("".concat(url, "?pagination=").concat(page, "&region=global"))];
-                case 2:
-                    res = _a.sent();
-                    page += step;
-                    return [3 /*break*/, 1];
-                case 3: return [2 /*return*/, findLastPage(page - step * 2, Math.trunc(step / 2))];
-            }
+else {
+    var competitors = [];
+    var url_1 = "https://leetcode.com/contest/api/ranking/".concat(process.argv[2], "/");
+    function getCompetitors(url) {
+        return __awaiter(this, void 0, void 0, function () {
+            var response, error_1;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        _a.trys.push([0, 2, , 3]);
+                        return [4 /*yield*/, axios.get(url)];
+                    case 1:
+                        response = (_a.sent());
+                        return [2 /*return*/, response && response.data && response.data.total_rank];
+                    case 2:
+                        error_1 = _a.sent();
+                        console.error(error_1);
+                        return [3 /*break*/, 3];
+                    case 3: return [2 /*return*/];
+                }
+            });
         });
-    });
-}
-function findObjectWithRank(rank, page, step) {
-    if (page === void 0) { page = 0; }
-    if (step === void 0) { step = 100; }
-    return __awaiter(this, void 0, void 0, function () {
-        var res;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0:
-                    page = page === 0 ? step : page;
-                    console.log("Searching from page: ".concat(page), "in steps of: ".concat(step));
-                    _a.label = 1;
-                case 1:
-                    if (!((res && res.length > 0 && res.find(function (val) { return val.rank >= rank; })) === undefined)) return [3 /*break*/, 3];
-                    return [4 /*yield*/, getCompetitors("".concat(url, "?pagination=").concat(page, "&region=global"))];
-                case 2:
-                    res = _a.sent();
-                    page += step;
-                    return [3 /*break*/, 1];
-                case 3:
-                    if (res && res.find(function (val) { return val.rank === rank; })) {
-                        return [2 /*return*/, { ranker: res.find(function (val) { return val.rank === rank; }), pageFound: page - step }];
-                    }
-                    return [2 /*return*/, findObjectWithRank(rank, page - step * 2, Math.trunc(step / 2))];
-            }
+    }
+    function findLastPage(page, step) {
+        if (page === void 0) { page = 0; }
+        if (step === void 0) { step = 100; }
+        return __awaiter(this, void 0, void 0, function () {
+            var res;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        page = page === 0 ? step : page;
+                        if (step === 0)
+                            return [2 /*return*/, page + 1];
+                        console.log("Searching from page: ".concat(page), "In steps of: ".concat(step));
+                        _a.label = 1;
+                    case 1:
+                        if (!((res && res.length > 0 && res.find(function (val) { return val.score === 0; })) === undefined)) return [3 /*break*/, 3];
+                        return [4 /*yield*/, getCompetitors("".concat(url_1, "?pagination=").concat(page, "&region=global"))];
+                    case 2:
+                        res = _a.sent();
+                        page += step;
+                        return [3 /*break*/, 1];
+                    case 3: return [2 /*return*/, findLastPage(page - step * 2, Math.trunc(step / 2))];
+                }
+            });
         });
-    });
-}
-function findFirstZeroScore(page) {
-    return __awaiter(this, void 0, void 0, function () {
-        var res;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0: return [4 /*yield*/, getCompetitors("".concat(url, "?pagination=").concat(page, "&region=global"))];
-                case 1:
-                    res = _a.sent();
-                    return [2 /*return*/, res && res.find(function (val) { return val.score === 0; })];
-            }
+    }
+    function findObjectWithRank(rank, page, step) {
+        if (page === void 0) { page = 0; }
+        if (step === void 0) { step = 100; }
+        return __awaiter(this, void 0, void 0, function () {
+            var res;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        page = page === 0 ? step : page;
+                        console.log("Searching from page: ".concat(page), "in steps of: ".concat(step));
+                        _a.label = 1;
+                    case 1:
+                        if (!((res && res.length > 0 && res.find(function (val) { return val.rank >= rank; })) === undefined)) return [3 /*break*/, 3];
+                        return [4 /*yield*/, getCompetitors("".concat(url_1, "?pagination=").concat(page, "&region=global"))];
+                    case 2:
+                        res = _a.sent();
+                        page += step;
+                        return [3 /*break*/, 1];
+                    case 3:
+                        if (res && res.find(function (val) { return val.rank === rank; })) {
+                            return [2 /*return*/, { ranker: res.find(function (val) { return val.rank === rank; }), pageFound: page - step }];
+                        }
+                        return [2 /*return*/, findObjectWithRank(rank, page - step * 2, Math.trunc(step / 2))];
+                }
+            });
         });
-    });
-}
-function findPercentileByTime(finish_time, lastRank, page, step) {
-    if (page === void 0) { page = 0; }
-    if (step === void 0) { step = 100; }
-    return __awaiter(this, void 0, void 0, function () {
-        var res, pTile;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0:
-                    page = page === 0 ? step : page;
-                    console.log("Searching from page: ".concat(page), "in steps of: ".concat(step));
-                    _a.label = 1;
-                case 1:
-                    if (!((res && res.length > 0 && res.find(function (val) { return val.finish_time >= finish_time; })) === undefined)) return [3 /*break*/, 3];
-                    return [4 /*yield*/, getCompetitors("".concat(url, "?pagination=").concat(page, "&region=global"))];
-                case 2:
-                    res = _a.sent();
-                    page += step;
-                    return [3 /*break*/, 1];
-                case 3:
-                    //may never find exact time in seconds but this is unlikely
-                    if (res && res.find(function (val) { return val.finish_time === finish_time; })) {
-                        console.log('\npage found:', page - step);
-                        pTile = (res.find(function (val) { return val.finish_time === finish_time; }).rank / lastRank) * 100;
-                        console.log('\n', res.find(function (val) { return val.finish_time === finish_time; }));
-                        return [2 /*return*/, pTile > Math.trunc(pTile) ? Math.trunc(pTile) + 1 : pTile];
-                    }
-                    return [2 /*return*/, findPercentileByTime(finish_time, lastRank, page - step * 2, Math.trunc(step / 2))];
-            }
+    }
+    function findFirstZeroScore(page) {
+        return __awaiter(this, void 0, void 0, function () {
+            var res;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, getCompetitors("".concat(url_1, "?pagination=").concat(page, "&region=global"))];
+                    case 1:
+                        res = _a.sent();
+                        return [2 /*return*/, res && res.find(function (val) { return val.score === 0; })];
+                }
+            });
         });
-    });
-}
-function main() {
-    return __awaiter(this, void 0, void 0, function () {
-        var lastPage, lastRankObj, myTime, myPercentile, percentileByRank, searchTile, nthTileRank, nthObj, nthTime, hh, mm, ss;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0:
-                    console.log('Searching For last page with a score > 0\n');
-                    return [4 /*yield*/, findLastPage()];
-                case 1:
-                    lastPage = _a.sent();
-                    console.log('\nLast Page:', lastPage);
-                    return [4 /*yield*/, getCompetitors("".concat(url, "?pagination=").concat(lastPage, "&region=global"))];
-                case 2:
-                    lastRankObj = (_a.sent()).find(function (val) { return val.score === 0; });
-                    console.log('\nUser in last place:', lastRankObj);
-                    if (!(process.argv[4] && process.argv[5] && process.argv[6])) return [3 /*break*/, 4];
-                    myTime = Number(process.argv[4]) * 60 * 60 +
-                        Number(process.argv[5]) * 60 +
-                        Number(process.argv[6]) +
-                        lastRankObj.finish_time;
-                    console.log("\nSearching for percentile your completion time of ".concat(myTime, "s falls within:"));
-                    return [4 /*yield*/, findPercentileByTime(myTime, lastRankObj.rank - 1)];
-                case 3:
-                    myPercentile = _a.sent();
-                    console.log("\nWith time of ".concat(process.argv[4], ":").concat(process.argv[5], ":").concat(process.argv[6], " you finished in the ").concat(myPercentile, "th percentile, assuming you completed all submissions without error"));
-                    if (process.argv[7]) {
-                        percentileByRank = (Number(process.argv[7]) / (lastRankObj.rank - 1)) * 100;
-                        console.log("With a rank of ".concat(process.argv[7], " you finished in the ").concat(percentileByRank > Math.trunc(percentileByRank) ? Math.trunc(percentileByRank) + 1 : percentileByRank, "th percentile"));
-                    }
-                    _a.label = 4;
-                case 4:
-                    searchTile = process.argv[3] ? process.argv[3] : 10;
-                    nthTileRank = (Number(searchTile) / 100) * (lastRankObj.rank - 1);
-                    nthTileRank = nthTileRank > Math.trunc(nthTileRank) ? Math.trunc(nthTileRank) + 1 : nthTileRank;
-                    console.log("\nSearching for user marking the ".concat(searchTile, "th Percentile boundary. Rank: ").concat(nthTileRank, "\n"));
-                    return [4 /*yield*/, findObjectWithRank(nthTileRank)];
-                case 5:
-                    nthObj = _a.sent();
-                    nthTime = nthObj.ranker.finish_time - lastRankObj.finish_time;
-                    hh = Math.trunc(nthTime / 60 / 60);
-                    mm = Math.trunc((nthTime - hh * 60 * 60) / 60);
-                    ss = nthTime - mm * 60 - hh * 60 * 60;
-                    console.log("\nTo have made ".concat(searchTile, "th percentile you need to have finished within ").concat(hh, "h:").concat(mm, "m:").concat(ss, "s, ahead of user who ranked ").concat(nthTileRank, " on page ").concat(nthObj.pageFound));
-                    return [2 /*return*/];
-            }
+    }
+    function findPercentileByTime(finish_time, lastRank, page, step) {
+        if (page === void 0) { page = 0; }
+        if (step === void 0) { step = 100; }
+        return __awaiter(this, void 0, void 0, function () {
+            var res, pTile;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        page = page === 0 ? step : page;
+                        console.log("Searching from page: ".concat(page), "in steps of: ".concat(step));
+                        _a.label = 1;
+                    case 1:
+                        if (!((res && res.length > 0 && res.find(function (val) { return val.finish_time >= finish_time; })) === undefined)) return [3 /*break*/, 3];
+                        return [4 /*yield*/, getCompetitors("".concat(url_1, "?pagination=").concat(page, "&region=global"))];
+                    case 2:
+                        res = _a.sent();
+                        page += step;
+                        return [3 /*break*/, 1];
+                    case 3:
+                        //may never find exact time in seconds but this is unlikely
+                        if (res && res.find(function (val) { return val.finish_time === finish_time; })) {
+                            console.log('\npage found:', page - step);
+                            pTile = (res.find(function (val) { return val.finish_time === finish_time; }).rank / lastRank) * 100;
+                            console.log('\n', res.find(function (val) { return val.finish_time === finish_time; }));
+                            return [2 /*return*/, pTile > Math.trunc(pTile) ? Math.trunc(pTile) + 1 : pTile];
+                        }
+                        return [2 /*return*/, findPercentileByTime(finish_time, lastRank, page - step * 2, Math.trunc(step / 2))];
+                }
+            });
         });
-    });
+    }
+    function main() {
+        return __awaiter(this, void 0, void 0, function () {
+            var lastPage, lastRankObj, myTime, myPercentile, percentileByRank, searchTile, nthTileRank, nthObj, nthTime, hh, mm, ss;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        console.log('Searching For last page with a score > 0\n');
+                        return [4 /*yield*/, findLastPage()];
+                    case 1:
+                        lastPage = _a.sent();
+                        console.log('\nLast Page:', lastPage);
+                        return [4 /*yield*/, getCompetitors("".concat(url_1, "?pagination=").concat(lastPage, "&region=global"))];
+                    case 2:
+                        lastRankObj = (_a.sent()).find(function (val) { return val.score === 0; });
+                        console.log('\nUser in last place:', lastRankObj);
+                        if (!(process.argv[4] && process.argv[5] && process.argv[6])) return [3 /*break*/, 4];
+                        myTime = Number(process.argv[4]) * 60 * 60 +
+                            Number(process.argv[5]) * 60 +
+                            Number(process.argv[6]) +
+                            lastRankObj.finish_time;
+                        console.log("\nSearching for percentile your completion time of ".concat(myTime, "s falls within:"));
+                        return [4 /*yield*/, findPercentileByTime(myTime, lastRankObj.rank - 1)];
+                    case 3:
+                        myPercentile = _a.sent();
+                        console.log("\nWith time of ".concat(process.argv[4], ":").concat(process.argv[5], ":").concat(process.argv[6], " you finished in the ").concat(myPercentile, "th percentile, assuming you completed all submissions without error"));
+                        if (process.argv[7]) {
+                            percentileByRank = (Number(process.argv[7]) / (lastRankObj.rank - 1)) * 100;
+                            console.log("With a rank of ".concat(process.argv[7], " you finished in the ").concat(percentileByRank > Math.trunc(percentileByRank) ? Math.trunc(percentileByRank) + 1 : percentileByRank, "th percentile"));
+                        }
+                        _a.label = 4;
+                    case 4:
+                        searchTile = process.argv[3] ? process.argv[3] : 10;
+                        nthTileRank = (Number(searchTile) / 100) * (lastRankObj.rank - 1);
+                        nthTileRank = nthTileRank > Math.trunc(nthTileRank) ? Math.trunc(nthTileRank) + 1 : nthTileRank;
+                        console.log("\nSearching for user marking the ".concat(searchTile, "th Percentile boundary. Rank: ").concat(nthTileRank, "\n"));
+                        return [4 /*yield*/, findObjectWithRank(nthTileRank)];
+                    case 5:
+                        nthObj = _a.sent();
+                        nthTime = nthObj.ranker.finish_time - lastRankObj.finish_time;
+                        hh = Math.trunc(nthTime / 60 / 60);
+                        mm = Math.trunc((nthTime - hh * 60 * 60) / 60);
+                        ss = nthTime - mm * 60 - hh * 60 * 60;
+                        console.log("\nTo have made ".concat(searchTile, "th percentile you need to have finished within ").concat(hh, "h:").concat(mm, "m:").concat(ss, "s, ahead of user who ranked ").concat(nthTileRank, " on page ").concat(nthObj.pageFound));
+                        return [2 /*return*/];
+                }
+            });
+        });
+    }
+    main();
 }
-main();
