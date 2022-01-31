@@ -14,7 +14,7 @@ yarn install
 
 `yarn start <contest-name> `
 
-    - Percentile defaults to 10th
+    - Percentile defaults to 90th
 
     Finds finish_time needed to have made 10th percentile.
 

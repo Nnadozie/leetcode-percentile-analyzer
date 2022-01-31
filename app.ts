@@ -80,7 +80,7 @@ if (process.argv[2] === '-h') {
         '\n',
         res.find((val) => val.finish_time === finish_time),
       );
-      return pTile > Math.trunc(pTile) ? Math.trunc(pTile) + 1 : pTile;
+      return pTile > Math.trunc(pTile) ? 100 - Math.trunc(pTile) : 100 - pTile;
     }
 
     return findPercentileByTime(finish_time, lastRank, page - step * 2, Math.trunc(step / 2));
@@ -112,17 +112,17 @@ if (process.argv[2] === '-h') {
       );
 
       if (process.argv[7]) {
-        const percentileByRank = (Number(process.argv[7]) / (lastRankObj.rank - 1)) * 100;
+        const percentileByRank = 100 - (Number(process.argv[7]) / (lastRankObj.rank - 1)) * 100;
         console.log(
           `With a rank of ${process.argv[7]} you finished in the ${
-            percentileByRank > Math.trunc(percentileByRank) ? Math.trunc(percentileByRank) + 1 : percentileByRank
+            percentileByRank > Math.trunc(percentileByRank) ? Math.trunc(percentileByRank) : percentileByRank
           }th percentile`,
         );
       }
     }
 
-    const searchTile = process.argv[3] ? process.argv[3] : 10;
-    let nthTileRank = (Number(searchTile) / 100) * (lastRankObj.rank - 1);
+    const searchTile = process.argv[3] ? process.argv[3] : 90;
+    let nthTileRank = ((100 - Number(searchTile)) / 100) * (lastRankObj.rank - 1);
     nthTileRank = nthTileRank > Math.trunc(nthTileRank) ? Math.trunc(nthTileRank) + 1 : nthTileRank;
 
     console.log(`\nSearching for user marking the ${searchTile}th Percentile boundary. Rank: ${nthTileRank}\n`);

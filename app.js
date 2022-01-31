@@ -151,7 +151,7 @@ else {
                             console.log('\npage found:', page - step);
                             pTile = (res.find(function (val) { return val.finish_time === finish_time; }).rank / lastRank) * 100;
                             console.log('\n', res.find(function (val) { return val.finish_time === finish_time; }));
-                            return [2 /*return*/, pTile > Math.trunc(pTile) ? Math.trunc(pTile) + 1 : pTile];
+                            return [2 /*return*/, pTile > Math.trunc(pTile) ? 100 - Math.trunc(pTile) : 100 - pTile];
                         }
                         return [2 /*return*/, findPercentileByTime(finish_time, lastRank, page - step * 2, Math.trunc(step / 2))];
                 }
@@ -184,13 +184,13 @@ else {
                         myPercentile = _a.sent();
                         console.log("\nWith time of ".concat(process.argv[4], ":").concat(process.argv[5], ":").concat(process.argv[6], " you finished in the ").concat(myPercentile, "th percentile, assuming you completed all submissions without error"));
                         if (process.argv[7]) {
-                            percentileByRank = (Number(process.argv[7]) / (lastRankObj.rank - 1)) * 100;
-                            console.log("With a rank of ".concat(process.argv[7], " you finished in the ").concat(percentileByRank > Math.trunc(percentileByRank) ? Math.trunc(percentileByRank) + 1 : percentileByRank, "th percentile"));
+                            percentileByRank = 100 - (Number(process.argv[7]) / (lastRankObj.rank - 1)) * 100;
+                            console.log("With a rank of ".concat(process.argv[7], " you finished in the ").concat(percentileByRank > Math.trunc(percentileByRank) ? Math.trunc(percentileByRank) : percentileByRank, "th percentile"));
                         }
                         _a.label = 4;
                     case 4:
-                        searchTile = process.argv[3] ? process.argv[3] : 10;
-                        nthTileRank = (Number(searchTile) / 100) * (lastRankObj.rank - 1);
+                        searchTile = process.argv[3] ? process.argv[3] : 90;
+                        nthTileRank = ((100 - Number(searchTile)) / 100) * (lastRankObj.rank - 1);
                         nthTileRank = nthTileRank > Math.trunc(nthTileRank) ? Math.trunc(nthTileRank) + 1 : nthTileRank;
                         console.log("\nSearching for user marking the ".concat(searchTile, "th Percentile boundary. Rank: ").concat(nthTileRank, "\n"));
                         return [4 /*yield*/, findObjectWithRank(nthTileRank)];
