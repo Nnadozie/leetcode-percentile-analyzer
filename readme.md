@@ -1,16 +1,25 @@
-## Need to know:
+## About:
 
-Each contest url contains the `<contest-name>`. Example:
+This project is aimed at helping you track your leetcode performance using historical leetcode contest data.
 
-The contest name here is weekly-contest-276
+The idea being that even without having participated in past contests, you can find out how you'd have performed by timing yourself and using this tool to 
+determine what percentile that completion time would have placed you in, had you participated in that contest.
 
-https://leetcode.com/contest/weekly-contest-276/
+If you're more interested in looking at percentiles of users who have participated in contests please see this project:
+
+- [Leetcode ranking search](https://github.com/chiehmin/leetcode-ranking-search) by @chiehmin
 
 ## Before running
 
 yarn install
 
 ## Usage
+
+Each contest url contains the `<contest-name>`. Example:
+
+The contest name here is weekly-contest-276
+
+https://leetcode.com/contest/weekly-contest-276/
 
 `yarn start <contest-name> `
 
